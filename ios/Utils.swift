@@ -10,7 +10,7 @@ import Foundation
 import DynamsoftDocumentNormalizer
 
 class Utils {
-    
+
     static public func convertBase64ToImage(_ imageStr:String) ->UIImage?{
         if let data: NSData = NSData(base64Encoded: imageStr, options:NSData.Base64DecodingOptions.ignoreUnknownCharacters)
         {
@@ -21,7 +21,7 @@ class Utils {
         }
         return nil
     }
-    
+
     static func getBase64FromImage(_ image:UIImage) -> String{
         let dataTmp = image.jpegData(compressionQuality: 100)
         if let data = dataTmp {
@@ -29,16 +29,15 @@ class Utils {
         }
         return ""
     }
-    
-    
-    static func wrapDetectionResult (result:iDetectedQuadResult) -> [String: Any] {
-        var dict: [String: Any] = [:]
-        dict["confidenceAsDocumentBoundary"] = result.confidenceAsDocumentBoundary
-        dict["location"] = wrapLocation(location:result.location)
-        dict["area"] = result.location.area
-        return dict
-    }
-    
+
+
+   static func wrapDetectionResult (result:iDetectedQuadResult) -> [String: Any] {
+         var dict: [String: Any] = [:]
+         dict["confidenceAsDocumentBoundary"] = result.confidenceAsDocumentBoundary
+         dict["location"] = wrapLocation(location:result.location)
+         return dict
+     }
+
     static private func wrapLocation (location:iQuadrilateral?) -> [String: Any] {
         var dict: [String: Any] = [:]
         var points: [[String:CGFloat]] = []
@@ -52,5 +51,5 @@ class Utils {
         dict["points"] = points
         return dict
     }
-    
+
 }
