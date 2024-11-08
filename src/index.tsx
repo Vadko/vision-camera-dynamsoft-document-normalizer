@@ -34,15 +34,15 @@ export function initRuntimeSettingsFromString(template:string): Promise<boolean>
 /**
  * Detect documents in an image file
  */
-export function detectFile(url:string,template?:string): Promise<DetectedQuadResult[]> {
-  return VisionCameraDynamsoftDocumentNormalizer.detectFile(url,template ?? "");
+export function detectFile(url:string): Promise<DetectedQuadResult[]> {
+  return VisionCameraDynamsoftDocumentNormalizer.detectFile(url);
 }
 
 /**
  * Normalize an image file
  */
-export function normalizeFile(url:string, quad:Quadrilateral, config: NormalizationConfig, template?:string): Promise<NormalizedImageResult> {
-  return VisionCameraDynamsoftDocumentNormalizer.normalizeFile(url, quad, config, template ?? "");
+export function normalizeFile(url:string, quad:Quadrilateral, config: NormalizationConfig): Promise<NormalizedImageResult> {
+  return VisionCameraDynamsoftDocumentNormalizer.normalizeFile(url, quad, config);
 }
 
 /**
@@ -107,5 +107,5 @@ export function detect(frame: Frame,template?: string): Record<string,DetectedQu
   }else{
     return plugin.call(frame) as any;
   }
-  
+
 }
