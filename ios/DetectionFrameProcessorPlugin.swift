@@ -25,34 +25,14 @@ public class DetectionFrameProcessorPlugin: FrameProcessorPlugin {
             print("Failed to create CGImage!")
             return nil
         }
-        var templateName = "DetectDocumentBoundaries_Default"
-        if arguments != nil {
-            if arguments?["template"] != nil {
-                let template = arguments?["template"] as! String
-                if template != "" {
-                    templateName = template
-                }
-            }
-        }
-        
+
         var returned_results: [Any] = []
-        var image = UIImage(cgImage: cgImage)
-        var degree = 0.0;
-        if frame.orientation == UIImage.Orientation.left {
-            degree = 90.0;
-        }else if frame.orientation == UIImage.Orientation.down {
-            degree = 180.0;
-        }
+        let image = UIImage(cgImage: cgImage)
 
-        if degree != 0.0 {
-            image = DetectionFrameProcessorPlugin.rotate(image:image,degree:degree)
-        }
-
-        let capturedResult = VisionCameraDynamsoftDocumentNormalizer.cvr.captureFromImage(image, templateName: templateName)
-        let results = capturedResult.items
+        let results = try? VisionCameraDynamsoftDocumentNormalizer.ddn.detectQuadFromImage(image)
         if results != nil {
             for result in results! {
-                returned_results.append(Utils.wrapDetectionResult(result:result as! DetectedQuadResultItem))
+                returned_results.append(Utils.wrapDetectionResult(result:result))
             }
         }
         return returned_results

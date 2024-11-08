@@ -31,7 +31,7 @@ class Utils {
     }
     
     
-    static func wrapDetectionResult (result:DetectedQuadResultItem) -> [String: Any] {
+    static func wrapDetectionResult (result:iDetectedQuadResult) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["confidenceAsDocumentBoundary"] = result.confidenceAsDocumentBoundary
         dict["location"] = wrapLocation(location:result.location)
@@ -39,7 +39,7 @@ class Utils {
         return dict
     }
     
-    static private func wrapLocation (location:Quadrilateral?) -> [String: Any] {
+    static private func wrapLocation (location:iQuadrilateral?) -> [String: Any] {
         var dict: [String: Any] = [:]
         var points: [[String:CGFloat]] = []
         let CGPoints = location!.points as! [CGPoint]
