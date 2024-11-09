@@ -27,7 +27,18 @@ public class DetectionFrameProcessorPlugin: FrameProcessorPlugin {
         }
 
         var returned_results: [Any] = []
-        let image = UIImage(cgImage: cgImage)
+        var image = UIImage(cgImage: cgImage)
+        var degree = 0.0;
+            if frame.orientation == UIImage.Orientation.left {
+                degree = 90.0;
+            }else if frame.orientation == UIImage.Orientation.down {
+                degree = 180.0;
+            }
+
+            if degree != 0.0 {
+                image = DetectionFrameProcessorPlugin.rotate(image:image,degree:degree)
+            }
+
 
         let results = try? VisionCameraDynamsoftDocumentNormalizer.ddn.detectQuadFromImage(image)
         if results != nil {
