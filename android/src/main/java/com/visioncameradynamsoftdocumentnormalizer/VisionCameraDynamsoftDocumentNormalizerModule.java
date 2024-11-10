@@ -19,7 +19,6 @@ import com.dynamsoft.ddn.DetectedQuadResult;
 import com.dynamsoft.ddn.DocumentNormalizer;
 import com.dynamsoft.ddn.DocumentNormalizerException;
 import com.dynamsoft.ddn.NormalizedImageResult;
-import com.dynamsoft.utility.ImageManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -172,9 +171,9 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
                 if (config.getBoolean("saveNormalizationResultAsFile")) {
                     File cacheDir = mContext.getCacheDir();
                     String fileName = System.currentTimeMillis() + ".png";
-                    File file = new File(cacheDir, fileName);
-                    result.saveToFile(file.getAbsolutePath());
-                    returnResult.putString("imageURL",file.getAbsolutePath());
+                    File normalizedFile = new File(cacheDir, fileName);
+                    result.saveToFile(normalizedFile.getAbsolutePath());
+                    returnResult.putString("imageURL",normalizedFile.getAbsolutePath());
                 }
             }
             if (config.hasKey("includeNormalizationResultAsBase64")) {
