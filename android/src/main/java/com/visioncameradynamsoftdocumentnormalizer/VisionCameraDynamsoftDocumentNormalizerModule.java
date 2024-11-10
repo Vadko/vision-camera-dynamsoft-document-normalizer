@@ -11,17 +11,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.dynamsoft.core.basic_structures.CapturedResultItem;
-import com.dynamsoft.core.basic_structures.Quadrilateral;
-import com.dynamsoft.cvr.CapturedResult;
-import com.dynamsoft.cvr.CaptureVisionRouter;
-import com.dynamsoft.cvr.CaptureVisionRouterException;
-import com.dynamsoft.cvr.SimplifiedCaptureVisionSettings;
-import com.dynamsoft.ddn.DetectedQuadResultItem;
+import com.dynamsoft.core.CoreException;
+import com.dynamsoft.core.LicenseManager;
+import com.dynamsoft.core.LicenseVerificationListener;
+import com.dynamsoft.core.Quadrilateral;
+import com.dynamsoft.ddn.DetectedQuadResult;
+import com.dynamsoft.ddn.DocumentNormalizer;
 import com.dynamsoft.ddn.DocumentNormalizerException;
-import com.dynamsoft.ddn.NormalizedImageResultItem;
-import com.dynamsoft.license.LicenseManager;
-import com.dynamsoft.license.LicenseVerificationListener;
+import com.dynamsoft.ddn.NormalizedImageResult;
 import com.dynamsoft.utility.ImageManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -40,22 +37,17 @@ import java.io.FileOutputStream;
 public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextBaseJavaModule {
     public static final String NAME = "VisionCameraDynamsoftDocumentNormalizer";
     private Context mContext;
-    public static CaptureVisionRouter cvr;
+    public static DocumentNormalizer ddn;
     public VisionCameraDynamsoftDocumentNormalizerModule(ReactApplicationContext reactContext) {
         super(reactContext);
         mContext = reactContext;
-        initCVR();
+        initDDN();
     }
 
-    private void initCVR(){
+    private void initDDN(){
         try {
-            cvr = new CaptureVisionRouter(mContext);
-            try {
-                cvr.initSettings("{\"CaptureVisionTemplates\": [{\"Name\": \"Default\"},{\"Name\": \"DetectDocumentBoundaries_Default\",\"ImageROIProcessingNameArray\": [\"roi-detect-document-boundaries\"]},{\"Name\": \"DetectAndNormalizeDocument_Binary\",\"ImageROIProcessingNameArray\": [\"roi-detect-and-normalize-document-binary\"]},{\"Name\": \"DetectAndNormalizeDocument_Gray\",\"ImageROIProcessingNameArray\": [\"roi-detect-and-normalize-document-gray\"]},{\"Name\": \"DetectAndNormalizeDocument_Color\",\"ImageROIProcessingNameArray\": [\"roi-detect-and-normalize-document-color\"]},{\"Name\": \"NormalizeDocument_Binary\",\"ImageROIProcessingNameArray\": [\"roi-normalize-document-binary\"]},{\"Name\": \"NormalizeDocument_Gray\",\"ImageROIProcessingNameArray\": [\"roi-normalize-document-gray\"]},{\"Name\": \"NormalizeDocument_Color\",\"ImageROIProcessingNameArray\": [\"roi-normalize-document-color\"]}],\"TargetROIDefOptions\": [{\"Name\": \"roi-detect-document-boundaries\",\"TaskSettingNameArray\": [\"task-detect-document-boundaries\"]},{\"Name\": \"roi-detect-and-normalize-document-binary\",\"TaskSettingNameArray\": [\"task-detect-and-normalize-document-binary\"]},{\"Name\": \"roi-detect-and-normalize-document-gray\",\"TaskSettingNameArray\": [\"task-detect-and-normalize-document-gray\"]},{\"Name\": \"roi-detect-and-normalize-document-color\",\"TaskSettingNameArray\": [\"task-detect-and-normalize-document-color\"]},{\"Name\": \"roi-normalize-document-binary\",\"TaskSettingNameArray\": [\"task-normalize-document-binary\"]},{\"Name\": \"roi-normalize-document-gray\",\"TaskSettingNameArray\": [\"task-normalize-document-gray\"]},{\"Name\": \"roi-normalize-document-color\",\"TaskSettingNameArray\": [\"task-normalize-document-color\"]}],\"DocumentNormalizerTaskSettingOptions\": [{\"Name\": \"task-detect-and-normalize-document-binary\",\"ColourMode\": \"ICM_BINARY\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-detect-and-normalize\"}]},{\"Name\": \"task-detect-and-normalize-document-gray\",\"ColourMode\": \"ICM_GRAYSCALE\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-detect-and-normalize\"}]},{\"Name\": \"task-detect-and-normalize-document-color\",\"ColourMode\": \"ICM_COLOUR\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-detect-and-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-detect-and-normalize\"}]},{\"Name\": \"task-detect-document-boundaries\",\"TerminateSetting\": {\"Section\": \"ST_DOCUMENT_DETECTION\"},\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-detect\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-detect\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-detect\"}]},{\"Name\": \"task-normalize-document-binary\",\"StartSection\": \"ST_DOCUMENT_NORMALIZATION\",\"ColourMode\": \"ICM_BINARY\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-normalize\"}]},{\"Name\": \"task-normalize-document-gray\",\"ColourMode\": \"ICM_GRAYSCALE\",\"StartSection\": \"ST_DOCUMENT_NORMALIZATION\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-normalize\"}]},{\"Name\": \"task-normalize-document-color\",\"ColourMode\": \"ICM_COLOUR\",\"StartSection\": \"ST_DOCUMENT_NORMALIZATION\",\"SectionImageParameterArray\": [{\"Section\": \"ST_REGION_PREDETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_DETECTION\",\"ImageParameterName\": \"ip-normalize\"},{\"Section\": \"ST_DOCUMENT_NORMALIZATION\",\"ImageParameterName\": \"ip-normalize\"}]}],\"ImageParameterOptions\": [{\"Name\": \"ip-detect-and-normalize\",\"BinarizationModes\": [{\"Mode\": \"BM_LOCAL_BLOCK\",\"BlockSizeX\": 0,\"BlockSizeY\": 0,\"EnableFillBinaryVacancy\": 0}],\"TextDetectionMode\": {\"Mode\": \"TTDM_WORD\",\"Direction\": \"HORIZONTAL\",\"Sensitivity\": 7}},{\"Name\": \"ip-detect\",\"BinarizationModes\": [{\"Mode\": \"BM_LOCAL_BLOCK\",\"BlockSizeX\": 0,\"BlockSizeY\": 0,\"EnableFillBinaryVacancy\": 0,\"ThresholdCompensation\": 7}],\"TextDetectionMode\": {\"Mode\": \"TTDM_WORD\",\"Direction\": \"HORIZONTAL\",\"Sensitivity\": 7},\"ScaleDownThreshold\": 512},{\"Name\": \"ip-normalize\",\"BinarizationModes\": [{\"Mode\": \"BM_LOCAL_BLOCK\",\"BlockSizeX\": 0,\"BlockSizeY\": 0,\"EnableFillBinaryVacancy\": 0}],\"TextDetectionMode\": {\"Mode\": \"TTDM_WORD\",\"Direction\": \"HORIZONTAL\",\"Sensitivity\": 7}}]}");
-            } catch (CaptureVisionRouterException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e) {
+            ddn = new DocumentNormalizer();
+        } catch (DocumentNormalizerException e) {
             e.printStackTrace();
         }
     }
@@ -63,8 +55,8 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
     public Context getContext(){
         return mContext;
     }
-    public CaptureVisionRouter getCVR(){
-        return cvr;
+    public DocumentNormalizer getDDN(){
+        return ddn;
     }
 
     @Override
@@ -77,7 +69,7 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
     public void initLicense(String license, Promise promise) {
         LicenseManager.initLicense(license, mContext, new LicenseVerificationListener() {
             @Override
-            public void onLicenseVerified(boolean isSuccess, Exception error) {
+            public void licenseVerificationCallback(boolean isSuccess, CoreException error) {
                 if(!isSuccess){
                     error.printStackTrace();
                     promise.resolve(false);
@@ -92,20 +84,16 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
     @ReactMethod
     public void initRuntimeSettingsFromString(String template, Promise promise) {
         try {
-            cvr.initSettings(template);
+            ddn.initRuntimeSettingsFromString(template);
             promise.resolve(true);
-        } catch (CaptureVisionRouterException e) {
+        } catch (DocumentNormalizerException e) {
             e.printStackTrace();
             promise.reject("DDN",e.getMessage());
         }
     }
 
     @ReactMethod
-    public void detectFile(String filePath, String template,Promise promise) {
-        String templateName = "DetectDocumentBoundaries_Default";
-        if (!template.equals("")) {
-            templateName = template;
-        }
+    public void detectFile(String filePath, Promise promise) {
         WritableNativeArray returnResult = new WritableNativeArray();
         try {
             File file = new File(filePath);
@@ -113,9 +101,9 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
                 Uri uri = Uri.parse(filePath);
                 filePath = uri.getPath();
             }
-            CapturedResult capturedResult = cvr.capture(filePath,templateName);
-            for (CapturedResultItem quad:capturedResult.getItems()) {
-                returnResult.pushMap(Utils.getMapFromDetectedQuadResult((DetectedQuadResultItem) quad));
+            DetectedQuadResult[] quadResults = ddn.detectQuad(filePath);
+            for (DetectedQuadResult quad:quadResults) {
+                returnResult.pushMap(Utils.getMapFromDetectedQuadResult(quad));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,47 +155,39 @@ public class VisionCameraDynamsoftDocumentNormalizerModule extends ReactContextB
 
 
     @ReactMethod
-    public void normalizeFile(String filePath, ReadableMap quad, ReadableMap config, String template, Promise promise) {
+    public void normalizeFile(String filePath, ReadableMap quad, ReadableMap config, Promise promise) {
         WritableNativeMap returnResult = new WritableNativeMap();
-        String templateName = "NormalizeDocument_Color";
-        if (!template.equals("")) {
-            templateName = template;
-        }
-        Log.d("DDN",templateName);
+        Log.d("DDN",quad.toString());
+        ReadableArray points = quad.getArray("points");
+        Quadrilateral quadrilateral = new Quadrilateral();
+        quadrilateral.points = convertPoints(points);
         try {
             File file = new File(filePath);
             if (file.exists() == false) { //convert uri to path
                 Uri uri = Uri.parse(filePath);
                 filePath = uri.getPath();
             }
-            ReadableArray points = quad.getArray("points");
-            Quadrilateral quadrilateral = new Quadrilateral();
-            quadrilateral.points = convertPoints(points);
-            SimplifiedCaptureVisionSettings settings = cvr.getSimplifiedSettings(templateName);
-            settings.roi = quadrilateral;
-            settings.roiMeasuredInPercentage = false;
-            cvr.updateSettings(templateName,settings);
-            CapturedResult capturedResult = cvr.capture(filePath,templateName);
-            NormalizedImageResultItem result = (NormalizedImageResultItem) capturedResult.getItems()[0];
-
+            NormalizedImageResult result = ddn.normalize(filePath,quadrilateral);
             if (config.hasKey("saveNormalizationResultAsFile")) {
                 if (config.getBoolean("saveNormalizationResultAsFile")) {
                     File cacheDir = mContext.getCacheDir();
-                    String fileName = System.currentTimeMillis() + ".jpg";
-                    File output = new File(cacheDir,fileName);
-                    new ImageManager().saveToFile(result.getImageData(),output.getAbsolutePath(),true);
-                    returnResult.putString("imageURL",output.getAbsolutePath());
+                    String fileName = System.currentTimeMillis() + ".png";
+                    File file = new File(cacheDir, fileName);
+                    result.saveToFile(file.getAbsolutePath());
+                    returnResult.putString("imageURL",file.getAbsolutePath());
                 }
             }
             if (config.hasKey("includeNormalizationResultAsBase64")) {
                 if (config.getBoolean("includeNormalizationResultAsBase64")) {
-                    Bitmap bm = result.getImageData().toBitmap();
-                    String base64 = BitmapUtils.bitmap2Base64(bm);
+                    String base64 = BitmapUtils.bitmap2Base64(result.image.toBitmap());
                     returnResult.putString("imageBase64",base64);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (e instanceof DocumentNormalizerException) {
+                Log.d("DDN","Error code: "+((DocumentNormalizerException) e).getErrorCode());
+            }
             promise.reject("DDN",e.getMessage());
             return;
         }
